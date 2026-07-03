@@ -1,0 +1,33 @@
+# Miscellaneous
+.clang-format
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.genfiles/
+.idea/
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Android
+android/app/google-services.json
+
+# iOS
+ios/Runner/GoogleService-Info.plist
+ios/Runner/DebugProfile.entitlements
+ios/Runner/Release.entitlements
+
+# Documentation
+doc/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local .env files
+.env
+.env.local
+.env.*.local
