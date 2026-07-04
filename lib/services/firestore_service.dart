@@ -4,20 +4,29 @@ import 'package:expense_tracker/models/expense_model.dart';
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Add expense
   Future<void> addExpense(Expense expense) async {
-    await _firestore.collection('expenses').add(expense.toMap());
+    await _firestore.collection('expenses').add({
+      'id': expense.id,
+      'amount': expense.amount,
+      'category': expense.category,
+      'date': expense.date,
+      'description': expense.description,
+    });
   }
 
-  // Get expenses for a specific user
-  Stream<List<Expense>> getExpenses(String userId) {
+  Stream<List<Expense>> getExpenses() {
     return _firestore
         .collection('expenses')
-        .where('userId', isEqualTo: userId)
         .orderBy('date', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Expense.fromMap(doc.data(), doc.id))
-            .toList());
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Expense.fromFirestore(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
+  }
+  
+  Future<void> deleteExpense(String id) async {
+    await _firestore.collection('expenses').doc(id).delete();
   }
 }
