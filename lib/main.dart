@@ -6,31 +6,27 @@ import 'package:expense_tracker/services/firestore_service.dart';
 import 'package:expense_tracker/screens/login_screen.dart';
 import 'package:expense_tracker/screens/home_screen.dart';
 
-// IMPORTANT: Run `flutterfire configure` to generate this file with your project's specific credentials
-// For now, this is a placeholder.
-import 'firebase_options.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthService()),
-        Provider(create: (_) => FirestoreService()),
+        Provider<AuthService>(create: (_) => AuthService()),
+        Provider<FirestoreService>(create: (_) => FirestoreService()),
       ],
       child: MaterialApp(
         title: 'Expense Tracker',
-        theme: ThemeData(primarySwatch: Colors.green),
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
         home: const AuthWrapper(),
       ),
     );
@@ -38,22 +34,24 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
+  const AuthWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final authService = context.read<AuthService>();
-    return StreamBuilder<User?>(
-      stream: authService.userStream,
+    final authService = Provider.of<AuthService>(context);
+
+    return StreamBuilder(
+      stream: authService.authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         if (snapshot.hasData) {
-          return HomeScreen(user: snapshot.data!);
-        } else {
-          return const LoginScreen();
+          return const HomeScreen();
         }
+        return const LoginScreen();
       },
     );
   }
